@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Diary</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --secondary-color: #818CF8;
+            --background-color: #F3F4F6;
+            --text-color: #1F2937;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .question-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .question {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        
+        .question:hover {
+            color: var(--secondary-color);
+        }
+        
+        .record-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .record-button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+        
+        .record-button.recording {
+            background-color: #EF4444;
+            animation: pulse 2s infinite;
+        }
+        
+        .record-button.recording:hover {
+            background-color: #DC2626;
+        }
+        
+        .submit-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            margin-top: 1rem;
+        }
+        
+        .submit-button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+        
+        .nav-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .nav-button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+        
+        .nav-button:disabled {
+            background-color: #9CA3AF;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .transcription {
+            background-color: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1rem;
+            min-height: 100px;
+        }
+        
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Header -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center text-gray-900 hover:text-indigo-600 transition-colors">
+                        <i class="fas fa-book-open text-2xl text-indigo-600 mr-3"></i>
+                        <span class="text-xl font-bold">Caddy Diary</span>
+                    </a>
+                </div>
+                                    <div class="flex items-center space-x-4">
+                        <a href="/" class="text-gray-600 hover:text-indigo-600 transition-colors text-sm">
+                            <i class="fas fa-home mr-1"></i>
+                            Back to Home
+                        </a>
+                        {% if current_user.is_authenticated %}
+                        <a href="/dashboard" class="text-gray-600 hover:text-indigo-600 transition-colors text-sm">
+                            <i class="fas fa-tachometer-alt mr-1"></i>
+                            Dashboard
+                        </a>
+                        <a href="/logout" class="text-gray-600 hover:text-red-600 transition-colors text-sm">
+                            <i class="fas fa-sign-out-alt mr-1"></i>
+                            Sign Out
+                        </a>
+                        {% else %}
+                        <a href="/login" class="text-gray-600 hover:text-indigo-600 transition-colors text-sm">
+                            <i class="fas fa-sign-in-alt mr-1"></i>
+                            Sign In
+                        </a>
+                        <a href="/signup" class="text-indigo-600 hover:text-indigo-700 transition-colors text-sm">
+                            <i class="fas fa-user-plus mr-1"></i>
+                            Sign Up
+                        </a>
+                        {% endif %}
+                    </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="question-card">
+            <div class="question" id="current-question">
+                {{ questions[0].question }}
+                <button id="playQuestionButton" class="ml-2 text-blue-600 hover:text-blue-800" title="Play question">
+                    <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </button>
+            </div>
+            
+            <div class="mb-6">
+                <button class="text-lg font-semibold text-gray-700">Voice Input</button>
+            </div>
+            
+            <div>
+                <button id="recordButton" class="record-button">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                    </svg>
+                    Start Recording
+                </button>
+                
+                <div class="mt-4">
+                    <label for="sharedInput" class="block text-sm font-medium text-gray-700 mb-2">Your Answer:</label>
+                    <textarea id="sharedInput" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" rows="4" placeholder="Type your answer here or record audio..."></textarea>
+                    <div id="transcriptionProgress" class="mt-2 text-sm text-blue-600 hidden">
+                        <i class="fas fa-spinner fa-spin"></i> Transcribing audio...
+                    </div>
+                </div>
+            </div>
+            
+            <button id="submitButton" class="submit-button">
+                Submit Answer
+            </button>
+            
+            <!-- Navigation Controls -->
+            <div class="flex justify-between mt-6">
+                <button id="prevButton" class="nav-button" style="display: none;">
+                    <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                    </svg>
+                    Previous Question
+                </button>
+                <div class="text-center text-gray-600">
+                    Question <span id="questionNumber">1</span> of <span id="totalQuestions">{{ questions|length }}</span>
+                </div>
+                <button id="nextButton" class="nav-button" style="display: none;">
+                    Next Question
+                    <svg class="w-5 h-5 inline ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* eslint-disable */
+        // This file contains Jinja2 template syntax that gets processed server-side
+        // The linter errors are false positives due to template syntax
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+        let currentIndex = 0;
+        const questions = {{ questions|tojson }};
+        
+        // Text-to-speech for questions
+        const playQuestionButton = document.getElementById('playQuestionButton');
+        
+        // Function to play question audio
+        async function playQuestionAudio() {
+            const currentQuestion = questions[currentIndex].question;
+            try {
+                const response = await fetch('/text-to-speech', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: currentQuestion
+                    })
+                });
+                
+                if (response.ok) {
+                    const audioBlob = await response.blob();
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audio = new Audio(audioUrl);
+                    audio.play();
+                } else {
+                    console.error('Failed to generate speech for question');
+                }
+            } catch (error) {
+                console.error('Error playing question:', error);
+            }
+        }
+        
+        // Play question audio automatically when page loads
+        playQuestionAudio();
+        
+        // Manual play button event listener
+        playQuestionButton.addEventListener('click', playQuestionAudio);
+                
+        // Make question text clickable to replay audio
+        const questionElement = document.getElementById('current-question');
+        questionElement.addEventListener('click', (event) => {
+            // Only trigger if clicking on the question text, not the play button
+            if (!event.target.closest('button')) {
+                playQuestionAudio();
+            }
+        });
+        
+        // Recording functionality
+        const recordButton = document.getElementById('recordButton');
+        
+        recordButton.addEventListener('click', async () => {
+            if (!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    
+                    mediaRecorder.ondataavailable = (event) => {
+                        audioChunks.push(event.data);
+                    };
+                    
+                    mediaRecorder.onstop = async () => {
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        const formData = new FormData();
+                        formData.append('audio', audioBlob);
+                        
+                        // Show progress indicator
+                        const progressElement = document.getElementById('transcriptionProgress');
+                        progressElement.classList.remove('hidden');
+                        
+                        try {
+                            const response = await fetch('/transcribe', {
+                                method: 'POST',
+                                body: formData
+                            });
+                            
+                            if (response.ok) {
+                                const data = await response.json();
+                                if (data.transcription) {
+                                    document.getElementById('sharedInput').value = data.transcription;
+                                } else {
+                                    document.getElementById('sharedInput').value = 'No transcription received. Please try again.';
+                                }
+                            } else {
+                                const error = await response.json();
+                                document.getElementById('sharedInput').value = `Error: ${error.error || 'Failed to transcribe audio'}`;
+                            }
+                        } catch (error) {
+                            console.error('Error:', error);
+                            document.getElementById('sharedInput').value = 'Error transcribing audio. Please try again.';
+                        } finally {
+                            // Hide progress indicator
+                            progressElement.classList.add('hidden');
+                        }
+                    };
+                    
+                    mediaRecorder.start();
+                    isRecording = true;
+                    recordButton.classList.add('recording');
+                    recordButton.innerHTML = `
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z"></path>
+                        </svg>
+                        Stop Recording
+                    `;
+                } catch (error) {
+                    console.error('Error accessing microphone:', error);
+                    document.getElementById('sharedInput').value = 'Error accessing microphone. Please check your permissions.';
+                }
+            } else {
+                mediaRecorder.stop();
+                isRecording = false;
+                recordButton.classList.remove('recording');
+                recordButton.innerHTML = `
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                    </svg>
+                    Start Recording
+                `;
+            }
+        });
+        
+        // Submit functionality
+        const submitButton = document.getElementById('submitButton');
+        
+        submitButton.addEventListener('click', async () => {
+            const answer = document.getElementById('sharedInput').value.trim();
+            const transcription = answer;
+            
+            if (!answer) {
+                alert('Please provide an answer before submitting.');
+                return;
+            }
+            
+            // Save the current answer
+            saveCurrentAnswer();
+            
+            try {
+                const response = await fetch('/submit_answer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        question: questions[currentIndex],
+                        answer: answer,
+                        transcription: transcription
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        currentIndex++;
+                        if (currentIndex < questions.length) {
+                            // Update question display
+                            updateQuestionDisplay();
+                            updateNavigation();
+                        } else {
+                            window.location.href = '/summary';
+                        }
+                    } else {
+                        alert('Error submitting answer. Please try again.');
+                    }
+                } else {
+                    const error = await response.json();
+                    alert(`Error: ${error.error || 'Failed to submit answer'}`);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error submitting answer. Please try again.');
+            }
+        });
+        
+        // Store answers for navigation
+        let savedAnswers = new Array(questions.length).fill('');
+        
+        // Update navigation buttons and question counter
+        function updateNavigation() {
+            const prevButton = document.getElementById('prevButton');
+            const nextButton = document.getElementById('nextButton');
+            const questionNumber = document.getElementById('questionNumber');
+            
+            // Update question counter
+            questionNumber.textContent = currentIndex + 1;
+            
+            // Show/hide navigation buttons
+            prevButton.style.display = currentIndex > 0 ? 'inline-flex' : 'none';
+            nextButton.style.display = currentIndex < questions.length - 1 ? 'inline-flex' : 'none';
+            
+            // Enable/disable buttons
+            prevButton.disabled = currentIndex === 0;
+            nextButton.disabled = currentIndex === questions.length - 1;
+        }
+        
+        // Save current answer
+        function saveCurrentAnswer() {
+            const answer = document.getElementById('sharedInput').value.trim();
+            savedAnswers[currentIndex] = answer;
+        }
+        
+        // Load answer for a specific question
+        function loadAnswer(questionIndex) {
+            const answer = savedAnswers[questionIndex] || '';
+            document.getElementById('sharedInput').value = answer;
+        }
+        
+        // Navigation button event listeners
+        document.getElementById('prevButton').addEventListener('click', () => {
+            if (currentIndex > 0) {
+                saveCurrentAnswer();
+                currentIndex--;
+                updateQuestionDisplay();
+                loadAnswer(currentIndex);
+                updateNavigation();
+            }
+        });
+        
+        document.getElementById('nextButton').addEventListener('click', () => {
+            if (currentIndex < questions.length - 1) {
+                saveCurrentAnswer();
+                currentIndex++;
+                updateQuestionDisplay();
+                loadAnswer(currentIndex);
+                updateNavigation();
+            }
+        });
+        
+        // Update question display
+        function updateQuestionDisplay() {
+            const questionElement = document.getElementById('current-question');
+            questionElement.innerHTML = `
+                ${questions[currentIndex].question}
+                <button id="playQuestionButton" class="ml-2 text-blue-600 hover:text-blue-800" title="Play question">
+                    <svg class="w-5 h-5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </button>
+            `;
+            
+            // Re-attach event listeners
+            document.getElementById('playQuestionButton').addEventListener('click', playQuestionAudio);
+            
+            // Re-attach click event listener to question text
+            questionElement.addEventListener('click', (event) => {
+                if (!event.target.closest('button')) {
+                    playQuestionAudio();
+                }
+            });
+            
+            // Automatically play the question audio
+            playQuestionAudio();
+        }
+        
+        // Initialize navigation
+        updateNavigation();
+    </script>
+</body>
+</html> 

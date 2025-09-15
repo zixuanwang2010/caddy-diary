@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Check-in</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --secondary-color: #818CF8;
+            --background-color: #F3F4F6;
+            --text-color: #1F2937;
+        }
+        
+        body {
+            background-color: var(--background-color);
+            color: var(--text-color);
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .option-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .question-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        .option-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .option-description {
+            color: #6B7280;
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+        
+        .primary-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .primary-button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+        
+        .secondary-button {
+            background-color: #10B981;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .secondary-button:hover {
+            background-color: #059669;
+            transform: translateY(-1px);
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #E5E7EB;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        
+        .answer-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #E5E7EB;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            min-height: 120px;
+            resize: vertical;
+            transition: border-color 0.2s;
+        }
+        
+        .answer-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        
+        .question-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            line-height: 1.6;
+        }
+        
+        .play-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .play-button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-1px);
+        }
+        
+        .alert {
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            font-weight: 500;
+        }
+        
+        .alert-info {
+            background-color: #DBEAFE;
+            color: #1E40AF;
+            border: 1px solid #93C5FD;
+        }
+        
+        .alert-success {
+            background-color: #D1FAE5;
+            color: #065F46;
+            border: 1px solid #6EE7B7;
+        }
+        
+        .alert-danger {
+            background-color: #FEE2E2;
+            color: #991B1B;
+            border: 1px solid #FCA5A5;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .input-group .input-field {
+            flex: 1;
+        }
+        
+        .input-group .primary-button {
+            white-space: nowrap;
+        }
+        
+        @media (max-width: 640px) {
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .input-group .primary-button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center text-3xl font-bold mb-8 text-gray-800">Daily Check-in</h1>
+        
+        <!-- Phone Call Section -->
+        <div class="option-card">
+            <h3 class="option-title">
+                <i class="fas fa-phone-alt mr-2"></i>
+                Option 1: Phone Call
+            </h3>
+            <p class="option-description">
+                Prefer to speak your answers? We can call you and record your responses for a more natural experience.
+            </p>
+            <div class="input-group">
+                <input type="tel" id="phoneNumber" class="input-field" placeholder="Enter your phone number (e.g., +1234567890)" required>
+                <button class="primary-button" onclick="startPhoneCall()">
+                    <i class="fas fa-phone"></i>
+                    Start Call
+                </button>
+            </div>
+            <div id="callStatus" class="alert" style="display: none;"></div>
+        </div>
+
+        <!-- Text Input Section -->
+        <div class="option-card">
+            <h3 class="option-title">
+                <i class="fas fa-keyboard mr-2"></i>
+                Option 2: Text Input
+            </h3>
+            <p class="option-description">
+                Or type your answers below for a more detailed reflection:
+            </p>
+            
+            <form id="all-questions-form">
+            {% for question in questions %}
+                <div class="question-card">
+                    <h5 class="question-title">Question {{ loop.index }} of {{ questions|length }}</h5>
+                    <p class="question-text">
+                        {{ question.question }}
+                        <button class="play-button ml-2" type="button" onclick="playQuestion('{{ question.question }}')" title="Play question">
+                            <i class="fas fa-volume-up"></i>
+                            🔊
+                        </button>
+                    </p>
+                    <textarea class="answer-input" name="answer-{{ loop.index }}" id="answer-{{ loop.index }}" placeholder="Type your answer here..."></textarea>
+                    </div>
+                {% endfor %}
+                
+                <div class="text-center">
+                    <button class="secondary-button" type="button" onclick="submitAllAnswers()">
+                        <i class="fas fa-paper-plane"></i>
+                        Submit All Answers
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const totalQuestions = {{ questions|length }};
+
+        // Text-to-speech function for questions
+        async function playQuestion(questionText) {
+            try {
+                const response = await fetch('/text-to-speech', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: questionText
+                    })
+                });
+                if (response.ok) {
+                    const audioBlob = await response.blob();
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audio = new Audio(audioUrl);
+                    audio.play();
+                } else {
+                    console.error('Failed to generate speech for question');
+                }
+            } catch (error) {
+                console.error('Error playing question:', error);
+            }
+        }
+
+        function startPhoneCall() {
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const callStatus = document.getElementById('callStatus');
+            
+            if (!phoneNumber) {
+                callStatus.className = 'alert alert-danger';
+                callStatus.innerHTML = '<i class="fas fa-exclamation-triangle mr-2"></i>Please enter a phone number';
+                callStatus.style.display = 'block';
+                return;
+            }
+
+            callStatus.className = 'alert alert-info';
+            callStatus.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Initiating call...';
+            callStatus.style.display = 'block';
+
+            fetch('/start_call', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phone_number: phoneNumber })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    callStatus.className = 'alert alert-success';
+                    callStatus.innerHTML = '<i class="fas fa-check-circle mr-2"></i>Call initiated! Please answer your phone.';
+                } else {
+                    callStatus.className = 'alert alert-danger';
+                    callStatus.innerHTML = '<i class="fas fa-times-circle mr-2"></i>' + (data.error || 'Failed to initiate call');
+                }
+            })
+            .catch(error => {
+                callStatus.className = 'alert alert-danger';
+                callStatus.innerHTML = '<i class="fas fa-times-circle mr-2"></i>Error: ' + error.message;
+            });
+        }
+
+        function submitAllAnswers() {
+            const answers = [];
+            for (let i = 1; i <= totalQuestions; i++) {
+                const answer = document.getElementById(`answer-${i}`).value;
+                if (!answer) {
+                    alert(`Please answer question ${i}`);
+                    return;
+                }
+                answers.push({
+                    question: document.querySelector(`#answer-${i}`).closest('.question-card').querySelector('.question-text').textContent.trim(),
+                    answer: answer
+                });
+            }
+
+            // Submit each answer and clear textareas
+            let submitted = 0;
+            answers.forEach((answer, index) => {
+                fetch('/submit_answer', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(answer)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Clear this specific textarea immediately after successful submission
+                    document.getElementById(`answer-${index + 1}`).value = '';
+                    submitted++;
+                    if (submitted === totalQuestions) {
+                        window.location.href = '/summary';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error submitting answers. Please try again.');
+                });
+            });
+        }
+    </script>
+</body>
+</html>

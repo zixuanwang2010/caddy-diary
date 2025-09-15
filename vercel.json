@@ -1,0 +1,30 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "api/*.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "static/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/static/(.*)",
+      "dest": "/static/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/api/index.py"
+    }
+  ],
+  "env": {
+    "SECRET_KEY": "@secret_key",
+    "ELEVENLABS_API_KEY": "@elevenlabs_api_key",
+    "HUGGINGFACE_API_KEY": "@huggingface_api_key",
+    "SENDGRID_API_KEY": "@sendgrid_api_key",
+    "DATABASE_URL": "@database_url"
+  }
+}

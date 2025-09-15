@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Diary Entry - Caddy Diary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center text-gray-900 hover:text-indigo-600 transition-colors">
+                        <i class="fas fa-book-open text-2xl text-indigo-600 mr-3"></i>
+                        <span class="text-xl font-bold">Caddy Diary</span>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/" class="text-gray-600 hover:text-indigo-600 transition-colors text-sm">
+                        <i class="fas fa-home mr-1"></i>
+                        Back to Home
+                    </a>
+                    {% if current_user.is_authenticated %}
+                    <a href="/dashboard" class="text-gray-600 hover:text-indigo-600 transition-colors text-sm">
+                        <i class="fas fa-tachometer-alt mr-1"></i>
+                        Dashboard
+                    </a>
+                    <a href="/logout" class="text-gray-600 hover:text-red-600 transition-colors text-sm">
+                        <i class="fas fa-sign-out-alt mr-1"></i>
+                        Sign Out
+                    </a>
+                    {% else %}
+                    <a href="/login" class="text-gray-600 hover:text-indigo-600 transition-colors text-sm">
+                        <i class="fas fa-sign-in-alt mr-1"></i>
+                        Sign In
+                    </a>
+                    <a href="/signup" class="text-indigo-600 hover:text-indigo-700 transition-colors text-sm">
+                        <i class="fas fa-user-plus mr-1"></i>
+                        Sign Up
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-4">Voice Diary Entry</h1>
+            <p class="text-lg text-gray-600">Speak your thoughts and let AI transcribe them for you</p>
+        </div>
+
+        <!-- Voice Recording Section -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8 mb-8">
+            <div class="text-center mb-6">
+                <div class="w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-microphone text-3xl text-indigo-600"></i>
+                </div>
+                <h2 class="text-xl font-semibold text-gray-900 mb-2">Record Your Entry</h2>
+                <p class="text-gray-600">Click the button below and start speaking about your day</p>
+            </div>
+
+            <!-- Recording Controls -->
+            <div class="flex justify-center space-x-4 mb-6">
+                <button id="recordBtn" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors">
+                    <i class="fas fa-microphone mr-2"></i>
+                    Start Recording
+                </button>
+                <button id="stopBtn" class="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors hidden">
+                    <i class="fas fa-stop mr-2"></i>
+                    Stop Recording
+                </button>
+            </div>
+
+            <!-- Recording Status -->
+            <div id="recordingStatus" class="text-center text-gray-600 mb-4 hidden">
+                <i class="fas fa-circle text-red-500 animate-pulse mr-2"></i>
+                Recording... Speak now!
+            </div>
+
+            <!-- Audio Player -->
+            <div id="audioPlayer" class="hidden">
+                <audio id="recordedAudio" controls class="w-full"></audio>
+            </div>
+
+            <!-- Transcription Result -->
+            <div id="transcriptionResult" class="hidden mt-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Transcription:</h3>
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <p id="transcriptionText" class="text-gray-700"></p>
+                </div>
+                <div class="mt-4 flex justify-center space-x-4">
+                    <button id="useTranscriptionBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                        <i class="fas fa-check mr-2"></i>
+                        Use This Transcription
+                    </button>
+                    <button id="retryBtn" class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors">
+                        <i class="fas fa-redo mr-2"></i>
+                        Try Again
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alternative Options -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Other Options</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <a href="/diary" class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+                    <i class="fas fa-edit text-indigo-600 mr-3 text-xl"></i>
+                    <div>
+                        <h4 class="font-medium text-gray-900">Manual Entry</h4>
+                        <p class="text-sm text-gray-600">Type your diary entry</p>
+                    </div>
+                </a>
+                <a href="/" class="flex items-center p-4 border border-gray-200 rounded-lg hover:border-indigo-300 hover:bg-indigo-50 transition-colors">
+                    <i class="fas fa-home text-indigo-600 mr-3 text-xl"></i>
+                    <div>
+                        <h4 class="font-medium text-gray-900">Back to Home</h4>
+                        <p class="text-sm text-gray-600">Return to main page</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        let isRecording = false;
+
+        // Get DOM elements
+        const recordBtn = document.getElementById('recordBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const recordingStatus = document.getElementById('recordingStatus');
+        const audioPlayer = document.getElementById('audioPlayer');
+        const recordedAudio = document.getElementById('recordedAudio');
+        const transcriptionResult = document.getElementById('transcriptionResult');
+        const transcriptionText = document.getElementById('transcriptionText');
+        const useTranscriptionBtn = document.getElementById('useTranscriptionBtn');
+        const retryBtn = document.getElementById('retryBtn');
+
+        // Start recording
+        recordBtn.addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = (event) => {
+                    audioChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    recordedAudio.src = audioUrl;
+                    
+                    // Show audio player and transcription options
+                    audioPlayer.classList.remove('hidden');
+                    transcriptionResult.classList.remove('hidden');
+                    
+                    // Process the audio
+                    processAudio(audioBlob);
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                
+                // Update UI
+                recordBtn.classList.add('hidden');
+                stopBtn.classList.remove('hidden');
+                recordingStatus.classList.remove('hidden');
+                
+            } catch (error) {
+                console.error('Error accessing microphone:', error);
+                alert('Error accessing microphone. Please check permissions and try again.');
+            }
+        });
+
+        // Stop recording
+        stopBtn.addEventListener('click', () => {
+            if (mediaRecorder && isRecording) {
+                mediaRecorder.stop();
+                isRecording = false;
+                
+                // Update UI
+                recordBtn.classList.remove('hidden');
+                stopBtn.classList.add('hidden');
+                recordingStatus.classList.add('hidden');
+                
+                // Stop all tracks
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+            }
+        });
+
+        // Process audio and get transcription
+        async function processAudio(audioBlob) {
+            try {
+                const formData = new FormData();
+                formData.append('audio', audioBlob, 'recording.wav');
+
+                const response = await fetch('/phone_call', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    transcriptionText.textContent = result.transcription;
+                } else {
+                    transcriptionText.textContent = `Error: ${result.error}`;
+                }
+            } catch (error) {
+                console.error('Error processing audio:', error);
+                transcriptionText.textContent = 'Error processing audio. Please try again.';
+            }
+        }
+
+        // Use transcription
+        useTranscriptionBtn.addEventListener('click', () => {
+            const transcription = transcriptionText.textContent;
+            if (transcription && !transcription.startsWith('Error:')) {
+                // Store in session and redirect to diary entry
+                sessionStorage.setItem('voiceTranscription', transcription);
+                window.location.href = '/diary';
+            }
+        });
+
+        // Retry recording
+        retryBtn.addEventListener('click', () => {
+            audioPlayer.classList.add('hidden');
+            transcriptionResult.classList.add('hidden');
+            recordBtn.classList.remove('hidden');
+            stopBtn.classList.add('hidden');
+            recordingStatus.classList.add('hidden');
+        });
+    </script>
+</body>
+</html>

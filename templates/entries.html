@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Diary Entries - Caddy Diary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation Header -->
+    <nav class="bg-white shadow-sm border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center">
+                    <a href="/" class="flex items-center text-gray-900 hover:text-indigo-600 transition-colors">
+                        <i class="fas fa-book-open text-2xl text-indigo-600 mr-3"></i>
+                        <span class="text-xl font-bold">Caddy Diary</span>
+                    </a>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <a href="/dashboard" class="text-gray-600 hover:text-indigo-600 transition-colors text-sm">
+                        <i class="fas fa-tachometer-alt mr-1"></i>
+                        Dashboard
+                    </a>
+                    <a href="/logout" class="text-gray-600 hover:text-red-600 transition-colors text-sm">
+                        <i class="fas fa-sign-out-alt mr-1"></i>
+                        Sign Out
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2">My Diary Entries</h1>
+            <p class="text-gray-600">All your reflections and insights in one place</p>
+        </div>
+
+        <!-- Actions -->
+        <div class="mb-6 flex flex-col sm:flex-row gap-4">
+            <a href="/diary" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors">
+                <i class="fas fa-plus mr-2"></i>
+                New Entry
+            </a>
+            <a href="/dashboard" class="inline-flex items-center px-4 py-2 bg-gray-600 text-white font-medium rounded-lg hover:bg-gray-700 transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Dashboard
+            </a>
+        </div>
+
+        {% if entries %}
+        <!-- Entries List -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h2 class="text-lg font-semibold text-gray-900">{{ entries|length }} Diary Entries</h2>
+            </div>
+            
+            <div class="divide-y divide-gray-200">
+                {% for entry in entries %}
+                <div class="px-6 py-6 hover:bg-gray-50 transition-colors">
+                    <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="text-sm text-gray-500">{{ entry.entry_date.strftime('%B %d, %Y at %I:%M %p') }}</span>
+                                {% if entry.sentiment %}
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                    {% if 'positive' in entry.sentiment.lower() %}bg-green-100 text-green-800
+                                    {% elif 'negative' in entry.sentiment.lower() %}bg-red-100 text-red-800
+                                    {% else %}bg-gray-100 text-gray-800{% endif %}">
+                                    {{ entry.sentiment.split(':')[0] if ':' in entry.sentiment else entry.sentiment }}
+                                </span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="mb-4">
+                                <h3 class="text-lg font-medium text-gray-900 mb-2">Summary</h3>
+                                <p class="text-gray-700">{{ entry.summary }}</p>
+                            </div>
+                            
+                            {% if entry.advice %}
+                            <div class="mb-4">
+                                <h4 class="text-md font-medium text-gray-900 mb-2">AI Advice</h4>
+                                <p class="text-indigo-600"><i class="fas fa-lightbulb mr-2"></i>{{ entry.advice }}</p>
+                            </div>
+                            {% endif %}
+                            
+                            {% if entry.answers %}
+                            <div>
+                                <h4 class="text-md font-medium text-gray-900 mb-2">Your Responses</h4>
+                                <div class="space-y-2">
+                                    {% for answer in entry.answers %}
+                                    <div class="bg-gray-50 rounded-lg p-3">
+                                        <p class="text-sm font-medium text-gray-700 mb-1">{{ answer.question }}</p>
+                                        <p class="text-gray-600">{{ answer.answer }}</p>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="ml-6 flex flex-col space-y-2">
+                            <a href="/view_entry/{{ entry.id }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                                <i class="fas fa-eye mr-1"></i>View Full
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-12">
+            <div class="mx-auto w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <i class="fas fa-book-open text-gray-400 text-3xl"></i>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 mb-2">No diary entries yet</h3>
+            <p class="text-gray-500 mb-6">Start your diary journey by creating your first entry</p>
+            <a href="/diary" class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition-colors">
+                <i class="fas fa-plus mr-2"></i>
+                Write Your First Entry
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

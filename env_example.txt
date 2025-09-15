@@ -1,0 +1,26 @@
+# Caddy Diary Environment Configuration
+# Copy this file to .env and fill in your actual values
+
+# Flask Configuration
+SECRET_KEY=your-super-secret-key-here-change-this
+FLASK_ENV=development
+
+# Email Configuration (Choose one method)
+
+# Option 1: SendGrid (Recommended - Free tier available)
+SENDGRID_API_KEY=your_sendgrid_api_key_here
+FROM_EMAIL=noreply@yourdomain.com
+
+# Option 2: SMTP (Gmail, Outlook, etc.)
+# SMTP_SERVER=smtp.gmail.com
+# SMTP_PORT=587
+# SMTP_USERNAME=your_email@gmail.com
+# SMTP_PASSWORD=your_app_password_here
+
+# AI API Keys
+COHERE_API_KEY=your_cohere_api_key_here
+HUGGINGFACE_API_KEY=your_huggingface_api_key_here
+ELEVENLABS_API_KEY=your_elevenlabs_api_key_here
+
+# Database
+DATABASE_URL=sqlite:///caddy_diary.db

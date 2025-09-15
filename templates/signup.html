@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Caddy Diary</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md">
+        <!-- Back to Home Link -->
+        <div class="text-center mb-6">
+            <a href="/" class="text-white hover:text-gray-200 transition-colors text-sm">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Back to Home
+            </a>
+        </div>
+        
+        <!-- Signup Card -->
+        <div class="glass-effect rounded-2xl p-8 shadow-2xl">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-white rounded-full mb-4">
+                    <i class="fas fa-user-plus text-3xl text-indigo-600"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-white mb-2">Create Account</h1>
+                <p class="text-gray-200">Start your diary journey today</p>
+            </div>
+            
+            {% if error %}
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+                {{ error }}
+            </div>
+            {% endif %}
+            
+            <form method="POST" class="space-y-6">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-white mb-2">
+                        <i class="fas fa-user mr-2"></i>Username
+                    </label>
+                    <input type="text" id="username" name="username" required
+                           class="w-full px-4 py-3 bg-white bg-opacity-90 rounded-lg border-0 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"
+                           placeholder="Choose a username">
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-sm font-medium text-white mb-2">
+                        <i class="fas fa-envelope mr-2"></i>Email
+                    </label>
+                    <input type="email" id="email" name="email" required
+                           class="w-full px-4 py-3 bg-white bg-opacity-90 rounded-lg border-0 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"
+                           placeholder="your@email.com">
+                </div>
+                
+                <div>
+                    <label for="password" class="block text-sm font-medium text-white mb-2">
+                        <i class="fas fa-lock mr-2"></i>Password
+                    </label>
+                    <input type="password" id="password" name="password" required
+                           class="w-full px-4 py-3 bg-white bg-opacity-90 rounded-lg border-0 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"
+                           placeholder="Create a password">
+                </div>
+                
+                <div>
+                    <label for="confirm_password" class="block text-sm font-medium text-white mb-2">
+                        <i class="fas fa-lock mr-2"></i>Confirm Password
+                    </label>
+                    <input type="password" id="confirm_password" name="confirm_password" required
+                           class="w-full px-4 py-3 bg-white bg-opacity-90 rounded-lg border-0 focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all"
+                           placeholder="Confirm your password">
+                </div>
+                
+                <button type="submit" 
+                        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-4 rounded-lg transition-colors duration-200 transform hover:scale-105">
+                    <i class="fas fa-user-plus mr-2"></i>
+                    Create Account
+                </button>
+            </form>
+            
+            <div class="text-center mt-6">
+                <p class="text-gray-200">
+                    Already have an account? 
+                    <a href="/login" class="text-indigo-200 hover:text-white font-semibold transition-colors">
+                        Sign In
+                    </a>
+                </p>
+            </div>
+        </div>
+        
+        <!-- Features Preview -->
+        <div class="mt-8 text-center">
+            <h3 class="text-white font-semibold mb-4">What you'll get:</h3>
+            <div class="grid grid-cols-2 gap-4 text-sm">
+                <div class="text-gray-200">
+                    <i class="fas fa-save text-indigo-200 mr-2"></i>
+                    Save all entries
+                </div>
+                <div class="text-gray-200">
+                    <i class="fas fa-chart-line text-indigo-200 mr-2"></i>
+                    Track progress
+                </div>
+                <div class="text-gray-200">
+                    <i class="fas fa-robot text-indigo-200 mr-2"></i>
+                    AI insights
+                </div>
+                <div class="text-gray-200">
+                    <i class="fas fa-history text-indigo-200 mr-2"></i>
+                    Entry history
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+    "questions": [
+        "What did you do today?",
+        "How did you feel about your day?",
+        "What is something you are grateful for?",
+        "Did you face any challenges today?",
+        "What is one thing you want to improve tomorrow?"
+    ],
+    "openai_api_key": "YOUR_OPENAI_API_KEY_HERE"
+} 
